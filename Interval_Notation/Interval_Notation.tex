@@ -1,0 +1,224 @@
+\documentclass{article}%
+\usepackage{sagetex}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{amsmath}
+\setlength {\textwidth} {7.5in} 
+\setlength {\textheight}{10.0in}
+\setlength{\oddsidemargin} {-0.5in}
+\setlength {\evensidemargin} {-0.5in}
+\setlength{\topmargin} {-0.0in} 
+\setlength {\headheight} {4.0pt} 
+\setlength {\headsep} {0in}
+\setlength{\columnsep}{0.5cm}
+
+
+\begin{document}
+
+
+\begin{sagesilent}
+import random
+# Generate and set a random seed.
+t=ZZ.random_element(999999)
+set_random_seed(t)
+# Generate lists of random integers to be used
+a=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,20) for i in range(20)]
+b=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,20) for i in range(len(a))]
+c=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,32) for i in range(len(a))]
+d=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,20) for i in range(len(a))]
+f=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,8) for i in range(len(a))]
+g=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,34) for i in range(len(a))]
+h=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+k=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+# Generate list of 1s and 2s for functions to pick >/< or >=/<=
+INQL=[ZZ.random_element(1,3) for i in range(len(a))]
+INQR=[ZZ.random_element(1,3) for i in range(len(a))]
+
+# Ensure that left number in compound inequality is less than right number
+for j in range(len(a)):
+  while a[j]>=b[j]:
+    a[j]=(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,20)
+    b[j]=(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,20)
+
+
+
+# assign variables to a null character
+qoutput1=""
+aoutput1=""
+qoutput2=""
+aoutput2=""
+qoutput3=""
+aoutput3=""
+
+
+# This function returns a string format of compound 
+# inequality of the form:  a<x<b
+#SL is for left inequality
+#SR is for right inequality
+def INEQ_AB(A,B,SL,SR):
+ global INEQ_SB
+ INEQ_SB=""
+ STL=""
+ STR=""
+ if (SL == 1):
+   STL="<"
+ else:  
+   STL=" \leq "
+      
+ if (SR == 1):
+   STR="<"
+ else: 
+   STR=" \leq "
+
+ INEQ_SB=str(A) + STL + " x " + STR + str(B)
+ print(INEQ_SB)
+ return INEQ_SB
+
+       
+#This function returns a string format for
+# interval notation between two endpoints 
+def INEQ_INT(A,B,SL,SR):
+ global INEQ_IN
+ INEQ_IN=""
+ STL=""
+ STR=""
+ if (SL == 1):
+   STL="("
+ else:
+   STL="["
+       
+ if (SR == 1):
+   STR=")"
+ else: 
+   STR="]"
+ 
+ INEQ_IN= STL + str(A)+"," + str(B) + STR
+ print(INEQ_IN)
+ return INEQ_IN       
+       
+       
+#This function returns a string format for
+# an inequality of the form: x>c
+def INEQ_PINF(C,SL):
+  global INEQ_PI
+  INEQ_PI=""
+  STL=""
+  if (SL == 1):
+    STL=">"
+  else:
+    STL="\geq" 
+    
+  INEQ_PI="x" + STL + str(C)
+  print(INEQ_PI)
+  return  INEQ_PI
+  
+  
+#This function returns a string format for
+# an inequality of the form: x<d  
+def INEQ_NINF(D,SR):
+  global INEQ_NI
+  INEQ_NI=""
+  STR=""
+  if (SR == 1):
+    STR="<"
+  else:
+    STR="\leq" 
+    
+  INEQ_NI="x" + STR + str(D)
+  print(INEQ_NI)
+  return  INEQ_NI  
+       
+#This function returns a string format for
+# interval notation of the form: (c,infty)        
+def INEQ_PINF_INT(C,SL):
+  global INEQ_PI_INT
+  INEQ_PI_INT=""
+  STL=""
+  if (SL == 1):
+    STL="("
+  else:
+    STL="[" 
+    
+  INEQ_PI_INT= STL + str(C) 
+  print(INEQ_PI_INT)
+  return  INEQ_PI_INT
+  
+  
+#This function returns a string format for
+# interval notation of the form: (-infty,d)  
+def INEQ_NINF_INT(D,SL):
+  global INEQ_NI_INT
+  INEQ_NI_INT=""
+  STR=""
+  if (SR == 1):
+    STR=")"
+  else:
+    STR="]" 
+    
+  INEQ_NI_INT= str(D) + STR 
+  print(INEQ_NI_INT)
+  return  INEQ_NI_INT  
+       
+
+
+
+# Generate question and answer lists for each problem type:
+expression1=[INEQ_AB(a[i],b[i],INQL[i],INQR[i]) for i in range(len(a))]
+answer1=[INEQ_INT(a[i],b[i],INQL[i],INQR[i]) for i in range(len(a))] 
+
+expression2=[INEQ_PINF(c[i],INQL[i]) for i in range(len(a))]
+answer2=[INEQ_PINF_INT(c[i],INQL[i]) for i in range(len(a))] 
+
+expression3=[INEQ_NINF(d[i],INQR[i]) for i in range(len(a))]
+answer3=[INEQ_NINF_INT(d[i],INQR[i]) for i in range(len(a))] 
+
+
+# generate the latex code for the questions and answers
+for i in range(len(a)):
+  qoutput1 += r" \item $%s$" %(expression1[i])
+  aoutput1 += r" \item $%s$" %(answer1[i])
+  qoutput2 += r" \item $%s$" %(expression2[i])
+  aoutput2 += r" \item $%s ,\infty  )$" %(answer2[i])
+  qoutput3 += r" \item $%s$" %(expression3[i])
+  aoutput3 += r" \item $(-\infty, %s$" %(answer3[i])
+
+\end{sagesilent}
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%  Latex Output %%%%%%%%%%%%%%%%%%%%
+
+% Random Seed can be used to re-create a particular worksheet
+\noindent Write the following inequalities in interval notation: \\
+\textcolor{gray}{Random Seed: $\sage{t}$}
+
+
+% Create list of problems via qoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{qoutput1}
+\sagestr{qoutput2}
+\sagestr{qoutput3}
+\end{enumerate}
+\end{multicols}
+
+
+\newpage
+
+
+% Create associated list of solutions via aoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{aoutput1}
+\sagestr{aoutput2}
+\sagestr{aoutput3}
+\end{enumerate}
+\end{multicols}
+
+
+\end{document}

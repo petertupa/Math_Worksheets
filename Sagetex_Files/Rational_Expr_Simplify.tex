@@ -1,0 +1,139 @@
+\documentclass{article}%
+\usepackage{sagetex}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{amsmath}
+\setlength {\textwidth} {7.5in} 
+\setlength {\textheight}{10.0in}
+\setlength{\oddsidemargin} {-0.5in}
+\setlength {\evensidemargin} {-0.5in}
+\setlength{\topmargin} {-0.0in} 
+\setlength {\headheight} {4.0pt} 
+\setlength {\headsep} {0in}
+\setlength{\columnsep}{0.5cm}
+
+
+\begin{document}
+
+
+\begin{sagesilent}
+import random
+# Generate and set a random seed.
+t=ZZ.random_element(999999)
+set_random_seed(t)
+# Generate lists of random integers to be used
+a=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,10) for i in range(15)]
+b=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,10) for i in range(len(a))]
+c=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,8) for i in range(len(a))]
+d=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,10) for i in range(len(a))]
+f=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,9) for i in range(len(a))]
+g=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,34) for i in range(len(a))]
+h=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,12) for i in range(len(a))]
+k=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+m=[ZZ.random_element(2,10) for i in range(len(a))]
+n=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,10) for i in range(len(a))]
+q=[ZZ.random_element(1,10) for i in range(len(a))]
+r=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,10) for i in range(len(a))]
+II=Permutations(range(len(a))).random_element()
+
+
+
+# Setup numerators and denominators for each question form and store these each in a list
+#Problem Type1: ((x+a)(x+b))/(x+a) = (x+b)
+numer1=[expand((x-a[i])*(x-b[i]))  for i in range(len(a))] 
+denom1=[(x-a[i])  for i in range(len(a))]
+answer1=[(x-b[i]) for i in range(len(a))]
+
+#Problem Type2: ((x+a)(x+b))/((x+a)(x+c)) = (x+b)/(x+c) 
+numer2=[expand((x-c[i])*(x-d[i]))  for i in range(len(a))] 
+denom2=[expand((x-c[i])*(x-f[i]))  for i in range(len(a))]
+answer2=[(x-d[i])/(x-f[i]) for i in range(len(a))]
+
+#Problem Type3: (x+a)/a  Irreducible 
+numer3=[(x-g[i]) for i in range(len(a))]
+denom3=[abs(g[i]) for i in range(len(a))]
+answer3=[(x-g[i])/g[i] for i in range(len(a))]
+
+#Problem Type3: (x+a)/x  Irreducible
+numer4=[(x-h[i]) for i in range(len(a))]
+denom4=[x for i in range(len(a))]
+answer4=[(x-h[i])/x for i in range(len(a))]
+
+#Problem Type5: (x^2+a)/a  Irreducible
+numer5=[(x^2+m[i]) for i in range(len(a))]
+denom5=[m[i] for i in range(len(a))]
+answer5=[(x^2+m[i])/m[i] for i in range(len(a))]
+
+
+
+
+
+
+# assign variables to a null character
+qoutput1=""
+aoutput1=""
+qoutput2=""
+aoutput2=""
+qoutput3=""
+aoutput3=""
+qoutput4=""
+aoutput4=""
+qoutput5=""
+aoutput5=""
+
+
+# generate the latex code for the questions and answers
+for i in range(len(a)):
+  qoutput1 += r" \item $%s$" %(latex(numer1[i]/denom1[i]))
+  aoutput1 += r" \item $%s$" %(latex(answer1[i]))
+  qoutput2 += r" \item $%s$" %(latex(numer2[i]/denom2[i]))
+  aoutput2 += r" \item $%s$" %(latex(answer2[i]))
+  qoutput3 += r" \item $\frac{%s}{%s}$" %(latex(numer3[i]),latex(denom3[i]))
+  aoutput3 += r" \item $\frac{%s}{%s}$" %(latex(numer3[i]),latex(denom3[i]))
+  qoutput4 += r" \item $%s$" %(latex(numer4[i]/denom4[i]))
+  aoutput4 += r" \item $%s$" %(latex(answer4[i]))
+  qoutput5 += r" \item $\frac{%s}{%s}$" %(latex(numer5[i]),latex(denom5[i]))
+  aoutput5 += r" \item $\frac{%s}{%s}$" %(latex(numer5[i]),latex(denom5[i]))
+  
+
+  
+  
+\end{sagesilent}
+
+
+%%%%%%%%%%%%%%%%%%%%  Latex Output %%%%%%%%%%%%%%%%%%%%
+
+% Random Seed can be used to re-create a particular worksheet
+\noindent Simplify each rational expression. If the rational expression cannot be simplified, so state: \\
+\textcolor{gray}{Random Seed: $\sage{t}$}
+
+
+% Create list of problems via qoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{qoutput1}
+\sagestr{qoutput2}
+\sagestr{qoutput3}
+\sagestr{qoutput4}
+\sagestr{qoutput5}
+\end{enumerate}
+\end{multicols}
+
+
+\vfill
+\newpage
+
+
+% Create associated list of solutions via aoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{aoutput1}
+\sagestr{aoutput2}
+\sagestr{aoutput3}
+\sagestr{aoutput4}
+\sagestr{aoutput5}
+\end{enumerate}
+\end{multicols}
+
+
+\end{document}

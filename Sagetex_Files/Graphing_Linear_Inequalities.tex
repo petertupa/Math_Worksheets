@@ -1,0 +1,192 @@
+\documentclass{article}%
+\usepackage{sagetex}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{amsmath}
+\setlength {\textwidth} {7.5in} 
+\setlength {\textheight}{10.0in}
+\setlength{\oddsidemargin} {-0.5in}
+\setlength {\evensidemargin} {-0.5in}
+\setlength{\topmargin} {-0.0in} 
+\setlength {\headheight} {4.0pt} 
+\setlength {\headsep} {0in}
+\setlength{\columnsep}{0.5cm}
+
+
+\begin{document}
+
+
+\begin{sagesilent}
+import random
+# Generate and set a random seed.
+t=ZZ.random_element(999999)
+set_random_seed(t)
+# Generate lists of random integers to be used
+a=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(0,9) for i in range(6)]
+b=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,9) for i in range(len(a))]
+c=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,15) for i in range(len(a))]
+d=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(0,9) for i in range(len(a))]
+f=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,9) for i in range(len(a))]
+g=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,15) for i in range(len(a))]
+h=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+k=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+m=[ZZ.random_element(1,10) for i in range(len(a))]
+n=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,10) for i in range(len(a))]
+p=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(0,9) for i in range(len(a))]
+q=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,9) for i in range(len(a))]
+r=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,15) for i in range(len(a))]
+
+x,y=var('x,y')           # Declare variables
+
+# Setup list of inequality types and random choice of sign for each index
+# Note Indices of i:  0 for <, 1 for <=, 2 for >, 3 for >=
+# LS for linestyle: - for solid, -- for dashed
+LINALT=('<','<=','>','>=')
+LIN=['<','\leq','>','\geq']
+LS=('--','-','--','-')   # 
+
+# R_andom IN_equality Q_uestion/A_nswer Type# A(left)/B(right)
+RINQ1=[ZZ.random_element(0,4) for i in range(len(a))] 	#Initial random inequality switch
+RINA1=[RINQ1[i] for i in range(len(a))]                   #Inequality switch after accounting for negative y-coefficient
+RINQ2A=[ZZ.random_element(0,4) for i in range(len(a))]
+RINQ2B=[ZZ.random_element(0,4) for i in range(len(a))]
+RINA2A=[RINQ2A[i] for i in range(len(a))]
+RINA2B=[RINQ2B[i] for i in range(len(a))]
+
+
+# Make all y-int nice integers
+for j in range(len(a)):
+  while b[j] != 0 and (c[j]/b[j]).is_integer() == False:
+    b[j]=(-1)^(ZZ.random_element(1,3))*(ZZ.random_element(1,15))
+    c[j]=(-1)^(ZZ.random_element(1,3))*(ZZ.random_element(1,15))
+
+for j in range(len(a)):
+  while f[j] != 0 and (g[j]/f[j]).is_integer() == False:
+    f[j]=(-1)^(ZZ.random_element(1,3))*(ZZ.random_element(1,15))
+    g[j]=(-1)^(ZZ.random_element(1,3))*(ZZ.random_element(1,15))
+ 
+for j in range(len(a)):
+  while q[j] != 0 and (r[j]/q[j]).is_integer() == False:
+    q[j]=(-1)^(ZZ.random_element(1,3))*(ZZ.random_element(1,15))
+    r[j]=(-1)^(ZZ.random_element(1,3))*(ZZ.random_element(1,15))
+ 
+ 
+# Returns opposite sign inequality of same type
+# Use for setting up paired inequality
+# or when mulitplication by a negative occurs
+def INEQ_SWTCH(A):
+  global INEQPR
+  if   A == 0:    INEQSW = 2
+  elif A == 1:    INEQSW = 3
+  elif A == 2:    INEQSW = 0
+  elif A == 3:    INEQSW = 1
+  
+  return INEQSW 
+ 
+ 
+ 
+ 
+# Setup expressions for questions of the form Ax+By and solved expressions
+exp1=[ a[i]*x+b[i]*y     for i in range(len(a))]
+ans1=[(-a[i]/b[i]*x+c[i]/b[i]) if b[i]!=0 else (10^4*x+10^4*c[i]) for i in range(len(a))]
+
+exp2A=[ d[i]*x+f[i]*y     for i in range(len(a))]
+ans2A=[-d[i]/f[i]*x+g[i]/f[i] for i in range(len(a))]
+exp2B=[ p[i]*x+q[i]*y     for i in range(len(a))]
+ans2B=[-p[i]/q[i]*x+r[i]/q[i] for i in range(len(a))]
+  
+    
+# assign variables to a null character
+qoutput1=""
+qoutput2=""
+
+
+# generate the latex code for the questions qoutput
+for i in range(len(a)):
+  qoutput1 += r" \item $%s %s %s   $"  %( latex( exp1[i]), LIN[RINQ1[i]]  , latex(c[i]) )
+  qoutput2 += r" \item $\begin{cases} %s %s %s \\%s %s %s \end{cases} $" %(latex(exp2A[i]), LIN[RINQ2A[i]], latex(g[i]), latex(exp2B[i]), LIN[RINQ2B[i]], latex(r[i])   )
+
+
+  
+#Account for ineq sign switch via negative y-coefficient 
+for i in range(len(a)):
+  if b[i] < 0:
+    RINA1[i]=INEQ_SWTCH( RINQ1[i])
+    
+  if f[i] < 0:
+    RINA2A[i]=INEQ_SWTCH( RINQ2A[i])
+
+  if q[i] < 0:
+    RINA2B[i]=INEQ_SWTCH( RINQ2B[i])
+          
+    
+    
+#Set fill to shade above or below    
+FILL1=[10 for i in range(len(a))]
+FILL2A=[10 for i in range(len(a))]
+FILL2B=[10 for i in range(len(a))]
+for i in range(len(a)):
+  if RINA1[i] == 0 or RINA1[i] == 1:
+      FILL1[i] = -10
+  if RINA2A[i] == 0 or RINA2A[i] == 1:
+      FILL2A[i] = -10
+  if RINA2B[i] == 0 or RINA2B[i] == 1:
+      FILL2B[i] = -10
+      
+      
+\end{sagesilent}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%  Latex Output %%%%%%%%%%%%%%%%%%%%
+
+% Random Seed can be used to re-create a particular worksheet
+\noindent Solve each linear inequality and graph: \\
+\textcolor{gray}{Random Seed: $\sage{t}$}
+
+
+
+% Create list of problems via qoutput
+\begin{multicols}{2}
+\begin{enumerate}
+\sagestr{qoutput1}
+\sagestr{qoutput2}
+\end{enumerate}
+
+
+
+\newpage
+
+
+
+\end{multicols}
+
+\noindent Solutions:  \hfill (Note: \texttt{>=} and \texttt{<=} are equivalent to $\geq$ and $\leq$, respectively 
+
+
+
+% Give LateX solution and appropriate inequality, then graph with shaded solution set and dotted/dashed line
+% Students should know that only darkest region is full solution for the system of linear inequalities
+% Was unable to get LateX so see sage list of inequality latex code
+\begin{multicols}{3}
+\begin{enumerate}
+\foreach \i in {0,1,...,5}
+{
+ \item $y \:  \mathrm{ \sage{latex(LINALT[RINA1[\i]])} } \: \sage{latex(ans1[\i])}$ \\
+\sageplot[scale=.35]{plot(ans1[\i], (x, -7, 7), gridlines='major',linestyle=LS[RINA1[\i]], ymin=-7, ymax=7, fill=FILL1[\i], fillcolor='grey', fillalpha=1/3)} 
+}
+\foreach \i in {0,1,...,5}
+{
+ \item $\begin{cases} y \:  \mathrm{ \sage{latex(LINALT[RINA2A[\i]])} } \: \sage{latex(ans2A[\i])}     \\  y \:  \mathrm{ \sage{latex(LINALT[RINA2B[\i]])} } \: \sage{latex(ans2B[\i])}     \\     \end{cases}$\\
+\sageplot[scale=.3]{  plot(ans2A[\i], (x, -7, 7), gridlines='major',linestyle=LS[RINA2A[\i]], ymin=-7, ymax=7, fill=FILL2A[\i], fillcolor='grey', fillalpha=1/3) + plot(ans2B[\i], (x, -7, 7), gridlines='major',linestyle=LS[RINA2B[\i]], ymin=-7, ymax=7, fill=FILL2B[\i], fillcolor='grey', fillalpha=1/3) } 
+}
+\end{enumerate}
+\end{multicols}
+
+
+
+
+
+\end{document}

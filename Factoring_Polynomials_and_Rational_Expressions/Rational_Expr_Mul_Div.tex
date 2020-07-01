@@ -1,0 +1,156 @@
+\documentclass{article}%
+\usepackage{sagetex}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{amsmath}
+\setlength {\textwidth} {7.5in} 
+\setlength {\textheight}{10.0in}
+\setlength{\oddsidemargin} {-0.5in}
+\setlength {\evensidemargin} {-0.5in}
+\setlength{\topmargin} {-0.0in} 
+\setlength {\headheight} {0.0pt} 
+\setlength {\headsep} {0in}
+\setlength{\columnsep}{0.5cm}
+
+
+\begin{document}
+
+
+\begin{sagesilent}
+import random
+# Generate and set a random seed.
+t=ZZ.random_element(999999)
+set_random_seed(t)
+# Generate lists of random integers to be used
+a=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,10) for i in range(12)]
+b=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,10) for i in range(len(a))]
+c=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,8) for i in range(len(a))]
+d=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,10) for i in range(len(a))]
+f=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,9) for i in range(len(a))]
+g=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,34) for i in range(len(a))]
+h=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+k=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+m=[ZZ.random_element(2,10) for i in range(len(a))]
+n=[ZZ.random_element(4,10) for i in range(len(a))]
+q=[ZZ.random_element(2,10) for i in range(len(a))]
+r=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,10) for i in range(len(a))]
+II=Permutations(range(len(a))).random_element()
+
+
+# Setup numerators and denominators for each question form and store these each in a list
+#Problem Type1: (x+a)/(x+b) * ((x+b)(x+c))/((x+a)(x+c)) = (x+c)/(x+d)
+numer1L=[(x-a[i])  for i in range(len(a))]
+numer1R=[expand((x-b[i])*(x-c[i]))  for i in range(len(a))]
+denom1L=[(x-b[i])  for i in range(len(a))]
+denom1R=[expand((x-a[i])*(x-d[i]))  for i in range(len(a))]
+answer1=[(x-c[i])/(x-d[i]) for i in range(len(a))]
+
+#Problem Type2: ((x+a)(x+b))/((x+a)(x+c)) * ((x+c)(x+d))/((x+f)(x+b)) = (x+d)/(x+f)
+numer2L=[expand((x-a[i])*(x-b[i]))  for i in range(len(a))] 
+numer2R=[expand((x-c[i])*(x-d[i]))  for i in range(len(a))] 
+denom2L=[expand((x-a[i])*(x-c[i]))  for i in range(len(a))]
+denom2R=[expand((x-f[i])*(x-b[i]))  for i in range(len(a))]
+answer2=[(x-d[i])/(x-f[i]) for i in range(len(a))]
+
+#Problem Type3: (x+a)/b  \div (fx+fa)/d = d/bf
+numer3L=[(x-f[i])  for i in range(len(a))]
+numer3R=[expand((q[i]*x-q[i]*f[i]))  for i in range(len(a))]
+denom3L=[m[i]  for i in range(len(a))]
+denom3R=[n[i]  for i in range(len(a))]
+answer3=[ n[i]/(m[i]*q[i]) for i in range(len(a))]
+
+#Problem Type4:  (x+a)(x+b) \div ((x+a)(x-a))/(x+c) = (x+b)(x+c)/(x-a)
+numer4L=[expand((x-f[i])*(x-c[i]))  for i in range(len(a))] 
+numer4R=[expand((x-f[i])*(x+f[i]))  for i in range(len(a))] 
+denom4R=[(x-b[i])  for i in range(len(a))]
+answer4=[( ((x-f[i])*(x-c[i])*(x-b[i])) / ( (x-f[i])*(x+f[i]) )) for i in range(len(a))]
+
+#Problem Type5: (x+a)/(x+b) \div ((x+a)(x+c))/((x+b)(x+d)) = (x+d)/(x+c)
+numer5L=[expand((x-k[i]))  for i in range(len(a))] 
+numer5R=[expand((x-k[i])*(x-f[i]))  for i in range(len(a))] 
+denom5L=[(x-d[i])  for i in range(len(a))]
+denom5R=[expand((x-d[i])*(x-c[i]))  for i in range(len(a))]
+answer5=[( ((x-k[i])*(x-d[i])*(x-c[i])) / ( (x-k[i])*(x-f[i])*(x-d[i]) )) for i in range(len(a))]
+
+#Problem Type6: ((x+a)(x+b))/((x+a)(x+c)) \div ((x+d)(x+b))/((x+f)(x+c)) =  (x+f)/(x+d)
+numer6L=[expand((x-c[i])*(x-d[i]))  for i in range(len(a))] 
+numer6R=[expand((x-k[i])*(x-d[i]))  for i in range(len(a))] 
+denom6L=[expand((x-c[i])*(x-b[i]))  for i in range(len(a))]
+denom6R=[expand((x-f[i])*(x-b[i]))  for i in range(len(a))]
+answer6=[( ( (x-c[i])*(x-d[i])*(x-f[i])*(x-b[i]) ) / ( (x-c[i])*(x-b[i])*(x-k[i])*(x-d[i]))) for i in range(len(a))]
+
+
+# assign variables to a null character
+qoutput1=""
+aoutput1=""
+qoutput2=""
+aoutput2=""
+qoutput3=""
+aoutput3=""
+qoutput4=""
+aoutput4=""
+qoutput5=""
+aoutput5=""
+qoutput6=""
+aoutput6=""
+
+
+
+# generate the latex code for the questions and answers
+
+for i in range(len(a)):
+  qoutput1 += r" \item $%s \cdot %s$" %(latex(numer1L[i]/denom1L[i]),latex(numer1R[i]/denom1R[i])) 
+  aoutput1 += r" \item $%s$" %(latex(answer1[i]))
+  qoutput2 += r" \item $%s \cdot %s$" %(latex(numer2L[i]/denom2L[i]),latex(numer2R[i]/denom2R[i])) 
+  aoutput2 += r" \item $%s$" %(latex(answer2[i]))
+  qoutput3 += r" \item $\frac{%s}{%s} \div \frac{%s}{%s}$" %(latex(numer3L[i]),latex(denom3L[i]),latex(numer3R[i]),latex(denom3R[i])) 
+  aoutput3 += r" \item $%s$" %(latex(answer3[i]))
+  qoutput4 += r" \item $(%s) \div \frac{%s}{%s}$" %(latex(numer4L[i]),latex(numer4R[i]),latex(denom4R[i])) 
+  aoutput4 += r" \item $%s$" %(latex(answer4[i])) 
+  qoutput5 += r" \item $\frac{%s}{%s} \div \frac{%s}{%s}$" %(latex(numer5L[i]),latex(denom5L[i]),latex(numer5R[i]),latex(denom5R[i])) 
+  aoutput5 += r" \item $%s$" %(latex(answer5[i])) 
+  qoutput6 += r" \item $\frac{%s}{%s} \div \frac{%s}{%s}$" %(latex(numer6L[i]),latex(denom6L[i]),latex(numer6R[i]),latex(denom6R[i])) 
+  aoutput6 += r" \item $%s$" %(latex(answer6[i])) 
+  
+  
+\end{sagesilent}
+
+
+%%%%%%%%%%%%%%%%%%%%  Latex Output %%%%%%%%%%%%%%%%%%%%
+
+% Random Seed can be used to re-create a particular worksheet
+\noindent Muliply or divide, as indicated, and then simplify if possible: \\
+\textcolor{gray}{Random Seed: $\sage{t}$}
+
+
+% Create list of problems via qoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{qoutput1}
+\sagestr{qoutput2}
+\sagestr{qoutput3}
+\sagestr{qoutput4}
+\sagestr{qoutput5}
+\sagestr{qoutput6}
+\end{enumerate}
+\end{multicols}
+
+
+\vfill
+\newpage
+
+
+% Create associated list of solutions via aoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{aoutput1}
+\sagestr{aoutput2}
+\sagestr{aoutput3}
+\sagestr{aoutput4}
+\sagestr{aoutput5}
+\sagestr{aoutput6}
+\end{enumerate}
+\end{multicols}
+
+
+\end{document}

@@ -1,0 +1,158 @@
+\documentclass{article}%
+\usepackage{sagetex}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{amsmath}
+\setlength {\textwidth} {7.5in} 
+\setlength {\textheight}{10.0in}
+\setlength{\oddsidemargin} {-0.5in}
+\setlength {\evensidemargin} {-0.5in}
+\setlength{\topmargin} {-0.0in} 
+\setlength {\headheight} {4.0pt} 
+\setlength {\headsep} {0in}
+\setlength{\columnsep}{0.5cm}
+
+
+\begin{document}
+
+
+\begin{sagesilent}
+import random
+x,y,z=var('x,y,z')
+# Generate and set a random seed.
+t=ZZ.random_element(999999)
+set_random_seed(t)
+# Generate lists of random integers to be used
+a=[ZZ.random_element(1,5) for i in range(15)]
+b=[ZZ.random_element(2,5) for i in range(len(a))]
+c=[ZZ.random_element(2,5) for i in range(len(a))]
+d=[ZZ.random_element(2,5) for i in range(len(a))]
+f=[ZZ.random_element(2,6) for i in range(len(a))]
+g=[ZZ.random_element(1,5) for i in range(len(a))]
+h=[ZZ.random_element(3,10) for i in range(len(a))]
+k=[ZZ.random_element(1,4) for i in range(len(a))]
+m=[ZZ.random_element(2,4) for i in range(len(a))]
+n=[ZZ.random_element(2,4) for i in range(len(a))]
+p=[ZZ.random_element(1,6) for i in range(len(a))]
+q=[ZZ.random_element(1,6) for i in range(len(a))]
+u=[ZZ.random_element(2,4) for i in range(len(a))]
+r=[ZZ.random_element(0,3) for i in range(len(a))]
+r1=[ZZ.random_element(0,3) for i in range(len(a))]
+r2=[ZZ.random_element(0,4) for i in range(len(a))]
+s=[ZZ.random_element(2,4) for i in range(len(a))]
+v=[ZZ.random_element(3,8) for i in range(len(a))]
+w=[ZZ.random_element(3,6) for i in range(len(a))]
+
+# Generate random list of +/- for LateX output
+PM=('+','-')
+RPM=[ZZ.random_element(0,2) for i in range(len(a))]
+
+# Generate random list of prime numbers
+PL=[2,3,5,7]
+RPL=[PL[ZZ.random_element(0,4)] for i in range(len(a))]
+RPL2=[PL[ZZ.random_element(0,4)] for i in range(len(a))]
+
+# Generate random list of 0s and 1s to turn off/on variables
+XZ=[ZZ.random_element(0,2) for i in range(len(a))]
+XZ2=[ZZ.random_element(0,2) for i in range(len(a))]
+YZ2=[ZZ.random_element(0,2) for i in range(len(a))]
+
+# check to make sure exponential num/den are not the same
+for j in range(len(a)):
+  while a[j]==b[j] or a[j]-b[j]==-1 or a[j]-b[j]==1:
+    a[j]=ZZ.random_element(1,5)
+    b[j]=ZZ.random_element(2,5)
+    
+# r is intended to be the exponent of variable to stays under radical
+# if r is larger than the radical index, pick another
+for j in range(len(a)):
+  while r[j]>=n[j]:
+    r[j]=ZZ.random_element(0,3)
+
+for j in range(len(a)):
+  while r1[j]>=n[j]:
+    r1[j]=ZZ.random_element(0,3)    
+    
+# Generate exponents for right radical and ensure they result
+# in correct like terms for addition
+alpha=[ZZ.random_element(0,p[i]) for i in range(len(a))]  
+beta=[ (p[i]-alpha[i])    for i in range(len(a))]
+alpha2=[ZZ.random_element(0,q[i]) for i in range(len(a))]  
+beta2=[ (q[i]-alpha2[i])    for i in range(len(a))]
+
+ 
+
+ 
+# generate the expressions for each question
+
+# Problem Type1: \sqrt[n]{prime*a^n*x} + \sqrt[n]{prime*b^n*x}
+expression1a=[RPL[i]*a[i]^m[i]*x^XZ[i] for i in range(len(a))]
+expression1b=[RPL[i]*b[i]^m[i]*x^XZ[i] for i in range(len(a))]
+
+
+# Problem Type2: \sqrt[n]{prime*a^n*x^(np+r)} + c*x^alpha*\sqrt[n]{prime*b^n*x^(n*beta+r)}    where p = alpha+beta
+expression2a=[RPL2[i]*c[i]^n[i]*x^(XZ2[i]*(n[i]*p[i]+r[i]))   *y^(YZ2[i]*(n[i]*q[i]+r1[i])) for i in range(len(a))]
+expression2b=[RPL2[i]*d[i]^n[i]*x^(XZ2[i]*(n[i]*beta[i]+r[i]))*y^(YZ2[i]*(n[i]*beta2[i]+r1[i])) for i in range(len(a))]
+
+ 
+# assign variables to a null character
+qoutput1=""
+aoutput1=""
+qoutput2=""
+aoutput2=""
+
+
+# generate the latex code for the questions and answers
+for i in range(len(a)):
+  if m[i]==2:  #\use \sqrt
+    qoutput1 += r" \item $\sqrt{%s} %s \sqrt{%s} $" %(latex( expression1a[i] ) ,latex(PM[RPM[i]]),  latex( expression1b[i] ))
+    aoutput1 += r" \item $%s \sqrt{%s} $" %(latex(a[i]+ (-1)^RPM[i]*b[i]),latex(RPL[i]*x^XZ[i]))
+  else:        #\use \sqrt[n]
+    qoutput1 += r" \item $\sqrt[%s]{%s} %s \sqrt[%s]{%s} $" %(latex(m[i]),  latex( expression1a[i] )  ,latex(PM[RPM[i]])  ,latex(m[i]),  latex( expression1b[i] ))
+    aoutput1 += r" \item $%s \sqrt[%s]{%s} $" %(latex(a[i]+(-1)^RPM[i]*b[i]),latex(m[i]),latex(RPL[i]*x^XZ[i]))
+  if n[i]==2:  #\use \sqrt
+    qoutput2 += r" \item $\sqrt{%s} %s %s \sqrt{%s} $" %(latex( expression2a[i] )  ,latex(PM[RPM[i]]) ,latex(f[i]*x^(XZ2[i]*alpha[i])*y^(YZ2[i]*alpha2[i])),  latex( expression2b[i] ))
+    aoutput2 += r" \item $%s \sqrt{%s} $" %(latex( (c[i]+d[i])*x^(XZ2[i]*p[i])*y^(YZ2[i]*q[i])    ),latex(RPL2[i]*x^(XZ2[i]*r[i])*y^(YZ2[i]*r1[i]))   )
+  else:        #\use \sqrt[n]
+    qoutput2 += r" \item $\sqrt[%s]{%s} %s %s  \sqrt[%s]{%s} $" %(latex(n[i]),  latex( expression2a[i] )  ,latex(PM[RPM[i]])  ,latex(f[i]*x^(XZ2[i]*alpha[i])*y^(YZ2[i]*alpha2[i])),latex(n[i]),  latex( expression2b[i] ))
+    aoutput2 += r" \item $%s \sqrt[%s]{%s} $" %(latex( (c[i]+(-1)^RPM[i]*d[i]*f[i])*x^(XZ2[i]*p[i])*y^(YZ2[i]*q[i])    ),latex(n[i]),latex(RPL2[i]*x^(XZ2[i]*r[i])*y^(YZ2[i]*r1[i])))
+
+ 
+\end{sagesilent}
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%  Latex Output %%%%%%%%%%%%%%%%%%%%
+
+% Random Seed can be used to re-create a particular worksheet
+\noindent Add or subtract, as indicated: \\
+\textcolor{gray}{Random Seed: $\sage{t}$}
+
+
+% Create list of problems via qoutput
+\begin{enumerate}
+\begin{multicols}{3}
+\sagestr{qoutput1}
+\sagestr{qoutput2}
+\end{multicols}
+\end{enumerate}
+
+
+\newpage
+
+
+% Create associated list of solutions via aoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{aoutput1}
+\sagestr{aoutput2}
+\end{enumerate}
+\end{multicols}
+
+
+\end{document}

@@ -1,0 +1,177 @@
+\documentclass{article}%
+\usepackage{sagetex}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{amsmath}
+\setlength {\textwidth} {7.5in} 
+\setlength {\textheight}{10.0in}
+\setlength{\oddsidemargin} {-0.5in}
+\setlength {\evensidemargin} {-0.5in}
+\setlength{\topmargin} {-0.0in} 
+\setlength {\headheight} {4.0pt} 
+\setlength {\headsep} {0in}
+\setlength{\columnsep}{0.5cm}
+
+
+\begin{document}
+
+
+\begin{sagesilent}
+import random
+x,y,z=var('x,y,z')
+# Generate and set a random seed.
+t=ZZ.random_element(999999)
+set_random_seed(t)
+# Generate lists of random integers to be used
+a=[ZZ.random_element(2,14) for i in range(20)]
+b=[ZZ.random_element(2,5) for i in range(len(a))]
+c=[ZZ.random_element(2,15) for i in range(len(a))]
+d=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,20) for i in range(len(a))]
+f=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,8) for i in range(len(a))]
+g=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,34) for i in range(len(a))]
+h=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+k=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+m=[ZZ.random_element(1,4) for i in range(len(a))]
+n=[ZZ.random_element(2,6) for i in range(len(a))]
+p=[ZZ.random_element(1,4) for i in range(len(a))]
+q=[ZZ.random_element(2,6) for i in range(len(a))]
+u=[ZZ.random_element(1,4) for i in range(len(a))]
+r=[ZZ.random_element(2,6) for i in range(len(a))]
+s=[ZZ.random_element(2,6) for i in range(len(a))]
+
+# List of possible fractions to use in exponents (only positive / both pos & neg)
+FRAC=[1/2,1/2,3/2,1/3,2/3,1/4,3/4,1/5,2/5,3/5,4/5,2,3,4,5]  #16 options
+FRAC2=[1/2,-1/2,3/2,-3/2,1/3,-1/3,2/3,-2/3,1/4,-1/4,3/4,-3/4,1/5,-1/5,2/5,-2/5,3/5,-3/5,4/5,-4/5,2,3,4,5]  #16 options
+
+# Generate random selection of fraction list
+RFRAC=[ZZ.random_element(0,15) for i in range(len(a))]
+RFRAC2=[ZZ.random_element(0,25) for i in range(len(a))]
+RFRAC3=[ZZ.random_element(0,15) for i in range(len(a))]
+
+# Generate random list of prime numbers
+PL=[2,3,5,7]
+RPL=[PL[ZZ.random_element(0,4)] for i in range(len(a))]
+RPL_EXP=[RPL[i]^n[i] for i in range(len(a))]
+ 
+# Generate random list of bases
+BASE=[2,3,4,5,6,7,x,x,x,y,y]
+RBASE=[BASE[ZZ.random_element(0,10)] for i in range(len(a))]
+
+
+# check to make sure exponential num/den are not the same
+for j in range(len(a)):
+  while m[j]==n[j]:
+    m[j]=ZZ.random_element(1,4)
+    n[j]=ZZ.random_element(2,6)
+
+for j in range(len(a)):
+  while p[j]==q[j]:
+    p[j]=ZZ.random_element(1,4)
+    q[j]=ZZ.random_element(2,6)
+    
+for j in range(len(a)):
+  while u[j]==r[j]:
+    u[j]=ZZ.random_element(1,4)
+    r[j]=ZZ.random_element(2,6)    
+    
+    
+
+
+
+
+
+# generate the solution of each problem 
+
+# Problem Type1: x^m/n * x^p/q
+answer1=[m[i]/n[i]+p[i]/q[i] for i in range(len(a))]
+# Check if answer1 =1, set output to '' so nothing appears in LateX output
+for i in range(len(a)):
+  if answer1[i]==1:
+    answer1[i]=''   
+
+# Problem Type2:  x^(m/n) / x^(p/q)   
+answer2=[p[i]/r[i]-m[i]/s[i] for i in range(len(a))]
+   
+# Problem Type3:  ( x^(m/n) )^(p/q)
+
+# Problem Type4:  ( x^(m/n) * y^(p/q) )^k     
+answer4=[(x^FRAC[RFRAC[i]]*y^FRAC2[RFRAC2[i]])^FRAC[RFRAC3[i]] for i in range(len(a))]
+answer4=[answer4[i].canonicalize_radical() for i in range(len(a))]        #Force to simplify nicely
+     
+    
+    
+# assign variables to a null character
+qoutput1=""
+aoutput1=""
+qoutput2=""
+aoutput2=""
+qoutput3=""
+aoutput3=""
+qoutput4=""
+aoutput4=""
+
+
+# generate the latex code for the questions and answers
+for i in range(len(a)):
+  qoutput1 += r" \item $%s^\frac{%s}{%s} \cdot %s^\frac{%s}{%s}$" %(latex(RBASE[i]),m[i],n[i],latex(RBASE[i]),p[i],q[i])
+  aoutput1 += r" \item $%s^%s $" %(latex(RBASE[i]),latex(answer1[i]))
+  
+  qoutput2 += r" \item $\frac{%s^\frac{%s}{%s}}{%s^\frac{%s}{%s}}  $" %(latex(RBASE[i]),p[i],r[i],latex(RBASE[i]),m[i],s[i])
+  if answer2[i] > 0:
+    aoutput2 += r" \item $%s^%s$" %(latex(RBASE[i]),latex(answer2[i]))    #a>0 then x^a
+  elif answer2[i] < 0:
+    aoutput2 += r" \item $\frac{1}{%s^%s}$" %(latex(RBASE[i]),latex(abs(answer2[i])))  #a<0 then 1/x^a
+  elif answer2[i] == 1:  
+    aoutput2 += r" \item $%s $" %(latex(RBASE[i]))       #a=1 then x 
+  elif answer2[i] == 0: 
+    aoutput2 += r" \item $1 $"    #a=0 then 1
+
+  qoutput3 += r" \item $(%s^\frac{%s}{%s})^\frac{%s}{%s} $" %(latex(RBASE[i]),u[i],r[i],m[i],n[i])
+  aoutput3 += r" \item $%s$" %(latex(RBASE[i]^(u[i]*m[i]/r[i]/n[i])))
+
+  qoutput4 += r" \item $(x^%s y^{%s})^%s $" %(latex(FRAC[RFRAC[i]]),latex(FRAC2[RFRAC2[i]]),latex(FRAC[RFRAC3[i]]))
+  aoutput4+= r" \item $%s$" %(latex(answer4[i]))
+
+
+\end{sagesilent}
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%  Latex Output %%%%%%%%%%%%%%%%%%%%
+
+% Random Seed can be used to re-create a particular worksheet
+\noindent Simplify using the properties of rational exponents: \\
+\textcolor{gray}{Random Seed: $\sage{t}$}
+
+
+% Create list of problems via qoutput
+\begin{enumerate}
+\begin{multicols}{3}
+\sagestr{qoutput1}
+\sagestr{qoutput2}
+\sagestr{qoutput3}
+\sagestr{qoutput4}
+\end{multicols}
+\end{enumerate}
+
+
+\newpage
+
+
+% Create associated list of solutions via aoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{aoutput1}
+\sagestr{aoutput2}
+\sagestr{aoutput3}
+\sagestr{aoutput4}
+\end{enumerate}
+\end{multicols}
+
+
+\end{document}

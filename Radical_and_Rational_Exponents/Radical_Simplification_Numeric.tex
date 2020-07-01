@@ -1,0 +1,116 @@
+\documentclass{article}%
+\usepackage{sagetex}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{amsmath}
+\setlength {\textwidth} {7.5in} 
+\setlength {\textheight}{10.0in}
+\setlength{\oddsidemargin} {-0.5in}
+\setlength {\evensidemargin} {-0.5in}
+\setlength{\topmargin} {-0.0in} 
+\setlength {\headheight} {4.0pt} 
+\setlength {\headsep} {0in}
+\setlength{\columnsep}{0.5cm}
+
+
+\begin{document}
+
+
+\begin{sagesilent}
+import random
+# Generate and set a random seed.
+t=ZZ.random_element(999999)
+set_random_seed(t)
+# Generate lists of random integers to be used
+a=[ZZ.random_element(2,14) for i in range(20)]
+b=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,11) for i in range(len(a))]
+c=[ZZ.random_element(200,1000) for i in range(len(a))]
+d=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,20) for i in range(len(a))]
+f=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,8) for i in range(len(a))]
+g=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,34) for i in range(len(a))]
+h=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+k=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+m=[ZZ.random_element(3,6) for i in range(len(a))]
+REXP=[ZZ.random_element(0,2) for i in range(len(a))]  #Switch to turn on/off variable term
+RPN=[(-1)^(ZZ.random_element(1,3)) for i in range(len(a))]  #Random positive/negative
+
+#Matrix with three rows, each with reasonable random roots for different randical indices
+RMAT2=matrix(ZZ,3,len(a))
+for i in range(len(a)):
+  RMAT2[0,i]=ZZ.random_element(1,12)
+  RMAT2[1,i]=ZZ.random_element(1,5)
+  RMAT2[2,i]=ZZ.random_element(1,4)
+
+print(RMAT2)  
+  
+# generate the question and solution of each equation
+
+# Problem Type1: sqrt(a)=b
+expression1=[sqrt(SR(a[i]^2),hold=True) for i in range(len(a))]
+answer1=[a[i] for i in range(len(a))]
+
+
+# Problem Type2: \sqrt[n](+/- ax^m)=bx
+expression2=[(RPN[i]*(RMAT2[m[i]-3,i]*x^REXP[i])^m[i]) for i in range(len(a))]
+answer2=[RPN[i]*RMAT2[m[i]-3,i]*x^REXP[i] for i in range(len(a))]
+
+
+# assign variables to a null character
+qoutput1=""
+aoutput1=""
+qoutput2=""
+aoutput2=""
+
+
+# generate the latex code for the questions and answers
+for i in range(len(a)):
+  qoutput1 += r" \item $%s$" %(latex(expression1[i]))
+  qoutput2 += r" \item $\sqrt[%s]{%s}$" %(latex(m[i]),latex(expression2[i]))
+  aoutput1 += r" \item $%s$" %(latex(answer1[i]))
+  if (m[i] %2 ==0 and RPN[i] > 0 and REXP[i]>0 ):    #With variable and even index gets AbsVal
+    aoutput2 += r" \item $|%s|$" %(latex(answer2[i]))
+  elif (m[i] %2 ==0 and RPN[i] < 0 ):                #negative argument and even index  is not real
+    aoutput2 += r" \item $\rm{N.A.R.N.}$" 
+  else:                                              # Otherwise doable
+    aoutput2 += r" \item $%s$" %(latex(answer2[i]))
+
+
+\end{sagesilent}
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%  Latex Output %%%%%%%%%%%%%%%%%%%%
+
+% Random Seed can be used to re-create a particular worksheet
+\noindent Simplify or state that the expression is not a real number: \\
+\textcolor{gray}{Random Seed: $\sage{t}$}
+
+
+% Create list of problems via qoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{qoutput1}
+\sagestr{qoutput2}
+\end{enumerate}
+\end{multicols}
+
+
+\newpage
+
+
+% Create associated list of solutions via aoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{aoutput1}
+\sagestr{aoutput2}
+\end{enumerate}
+\end{multicols}
+
+
+\end{document}

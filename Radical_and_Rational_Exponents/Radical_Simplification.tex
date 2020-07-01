@@ -1,0 +1,171 @@
+\documentclass{article}%
+\usepackage{sagetex}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{amsmath}
+\setlength {\textwidth} {7.5in} 
+\setlength {\textheight}{10.0in}
+\setlength{\oddsidemargin} {-0.5in}
+\setlength {\evensidemargin} {-0.5in}
+\setlength{\topmargin} {-0.0in} 
+\setlength {\headheight} {4.0pt} 
+\setlength {\headsep} {0in}
+\setlength{\columnsep}{0.5cm}
+
+
+\begin{document}
+
+
+\begin{sagesilent}
+import random
+x,y,z=var('x,y,z')
+# Generate and set a random seed.
+t=ZZ.random_element(999999)
+set_random_seed(t)
+# Generate lists of random integers to be used
+a=[ZZ.random_element(2,14) for i in range(10)]
+b=[ZZ.random_element(2,9) for i in range(len(a))]
+c=[ZZ.random_element(2,15) for i in range(len(a))]
+d=[ZZ.random_element(3,12) for i in range(len(a))]
+f=[ZZ.random_element(1,6) for i in range(len(a))]
+g=[ZZ.random_element(1,5) for i in range(len(a))]
+h=[ZZ.random_element(3,10) for i in range(len(a))]
+k=[ZZ.random_element(1,4) for i in range(len(a))]
+N=[ZZ.random_element(3,8) for i in range(len(a))]
+m=[ZZ.random_element(1,4) for i in range(len(a))]
+n=[ZZ.random_element(2,6) for i in range(len(a))]
+p=[ZZ.random_element(2,5) for i in range(len(a))]
+q=[ZZ.random_element(2,7) for i in range(len(a))]
+u=[ZZ.random_element(2,4) for i in range(len(a))]
+r=[ZZ.random_element(2,6) for i in range(len(a))]
+s=[ZZ.random_element(2,6) for i in range(len(a))]
+v=[ZZ.random_element(3,8) for i in range(len(a))]
+w=[ZZ.random_element(3,6) for i in range(len(a))]
+
+
+# Generate list of 0s and 1s to 'turn on/off' random constant or variable x/y
+CZ=[ZZ.random_element(0,2) for i in range(len(a))]
+XZ=[ZZ.random_element(0,2) for i in range(len(a))]
+YZ=[ZZ.random_element(0,2) for i in range(len(a))]
+
+
+# check to make sure exponential num/den are not the same
+for j in range(len(a)):
+  while m[j]==n[j]:
+    m[j]=ZZ.random_element(1,4)
+    n[j]=ZZ.random_element(2,6)
+
+for j in range(len(a)):
+  while p[j]==q[j]:
+    p[j]=ZZ.random_element(2,5)
+    q[j]=ZZ.random_element(2,7)
+    
+for j in range(len(a)):
+  while v[j]==w[j]:
+    v[j]=ZZ.random_element(3,6)
+    w[j]=ZZ.random_element(3,6)   
+    
+
+
+# generate the solution of each equation
+# Problem Type1: \sqrt[n]{C^a x^b y^c) = C^a/n x^b/n y^c/n     #Exponents chosen to give nice answers
+answer1=[( u[i]^(CZ[i]*N[i])  * x^(r[i]*N[i]) * y^(YZ[i]*s[i]*N[i])   )^(1/N[i]) for i in range(len(a))]
+answer1=[answer1[i].canonicalize_radical() for i in range(len(a))]   #Force the radical to simplify nicely
+
+#Problem Type2: (\sqrt[n]{x))^m = x^(m/n)
+answer2=[x^b[i]   for i in range(len(a))]
+
+#Problem Type3: \sqrt[n]{x^mn} = \sqrt[n]{x}
+
+#Problem Type4: \sqrt[n]{x^a}*\sqrt[m]{x^b) = x^(a/n+b/m) = \sqrt[den]{x^num}
+answer4T=[g[i]/v[i]+f[i]/w[i]  for i in range(len(a))]
+num4=[answer4T[i].numerator()  for i in range(len(a))]
+den4=[answer4T[i].denominator()  for i in range(len(a))]
+    
+#Problem Type5: \sqrt[n]{x^a} \div \sqrt[m]{x^b) = x^(a/n-b/m) = \sqrt[den]{x^num}   
+answer5T=[h[i]/v[i]-k[i]/w[i]  for i in range(len(a))]
+num5=[answer5T[i].numerator()  for i in range(len(a))]
+den5=[answer5T[i].denominator()  for i in range(len(a))]   
+    
+#Problem Type6: \sqrt[n]{ \sqrt[m]{ x } }  = x^(1/nm)   
+answer6T=[(1/p[i])*(1/q[i])  for i in range(len(a))]
+den6=[answer6T[i].denominator()  for i in range(len(a))]   
+
+    
+# assign variables to a null character
+qoutput1=""
+aoutput1=""
+qoutput2=""
+aoutput2=""
+qoutput3=""
+aoutput3=""
+qoutput4=""
+aoutput4=""
+qoutput5=""
+aoutput5=""
+qoutput6=""
+aoutput6=""
+
+
+# generate the latex code for the questions and answers
+for i in range(len(a)):
+  #qoutput1 += r" \item $\sqrt[%s]{%s %s %s}$" %(latex(N[i]),latex(u[i]^(CZ[i]*N[i])),latex(x^(XZ[i]*r[i]*N[i])),latex(y^(YZ[i]*s[i]*N[i])))
+  qoutput1 += r" \item $\sqrt[%s]{%s}$" %(latex(N[i]),  latex(  u[i]^(CZ[i]*N[i]) * x^(r[i]*N[i]) * y^(YZ[i]*s[i]*N[i]) ))
+  aoutput1 += r" \item $%s $" %(latex(answer1[i]))
+  qoutput2 += r" \item $(\sqrt[%s]{x})^{%s}$" %(latex(N[i]),  latex(b[i]*N[i]) )
+  aoutput2 += r" \item $%s $" %(latex(answer2[i]))
+  qoutput3 += r" \item $\sqrt[%s]{x^{%s}}$" %(latex(d[i]*r[i]),  latex(r[i]) )
+  aoutput3 += r" \item $\sqrt[%s]{x} $" %(latex(d[i]))
+  qoutput4 += r" \item $\sqrt[%s]{%s} \cdot \sqrt[%s]{%s}   $" %(latex(v[i]), latex(x^g[i]), latex(w[i]), latex(x^f[i]) )
+  aoutput4 += r" \item $\sqrt[%s]{x^{%s}} $" %(latex(den4[i]),latex(num4[i]))
+  qoutput5 += r" \item $\frac{ \sqrt[%s]{%s} }{ \sqrt[%s]{%s} }  $" %(latex(v[i]), latex(x^h[i]), latex(w[i]), latex(x^k[i]) )
+  aoutput5 += r" \item $\sqrt[%s]{%s} $" %(latex(den5[i]),latex(x^num5[i]))
+  qoutput6 += r" \item $ \sqrt[%s]{ \sqrt[%s]{x}  }    $" %(latex(p[i]), latex(q[i]) )
+  aoutput6 += r" \item $\sqrt[%s]{x} $" %(latex(den6[i]))
+
+
+\end{sagesilent}
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%  Latex Output %%%%%%%%%%%%%%%%%%%%
+
+% Random Seed can be used to re-create a particular worksheet
+\noindent Use rational exponents to simplify each expression. If rational exponents appear after simplifying, write the answer in radical notation. Assume that all variables represent positive numbers. Note: Treat $\sqrt[2]{-}$ as the same as $\sqrt{-}$ \\
+\textcolor{gray}{Random Seed: $\sage{t}$}
+
+
+% Create list of problems via qoutput
+\begin{enumerate}
+\begin{multicols}{3}
+\sagestr{qoutput1}
+\sagestr{qoutput2}
+\sagestr{qoutput3}
+\sagestr{qoutput4}
+\sagestr{qoutput5}
+\sagestr{qoutput6}
+\end{multicols}
+\end{enumerate}
+
+
+\newpage
+
+
+% Create associated list of solutions via aoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{aoutput1}
+\sagestr{aoutput2}
+\sagestr{aoutput3}
+\sagestr{aoutput4}
+\sagestr{aoutput5}
+\sagestr{aoutput6}
+\end{enumerate}
+\end{multicols}
+
+
+\end{document}

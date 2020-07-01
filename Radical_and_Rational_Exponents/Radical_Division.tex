@@ -1,0 +1,125 @@
+\documentclass{article}%
+\usepackage{sagetex}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{amsmath}
+\setlength {\textwidth} {7.5in} 
+\setlength {\textheight}{10.0in}
+\setlength{\oddsidemargin} {-0.5in}
+\setlength {\evensidemargin} {-0.5in}
+\setlength{\topmargin} {-0.0in} 
+\setlength {\headheight} {4.0pt} 
+\setlength {\headsep} {0in}
+\setlength{\columnsep}{0.5cm}
+
+
+\begin{document}
+
+
+\begin{sagesilent}
+import random
+x,y,z=var('x,y,z')
+# Generate and set a random seed.
+t=ZZ.random_element(999999)
+set_random_seed(t)
+# Generate lists of random integers to be used
+a=[ZZ.random_element(2,5) for i in range(15)]
+b=[ZZ.random_element(2,7) for i in range(len(a))]
+c=[ZZ.random_element(2,5) for i in range(len(a))]
+d=[ZZ.random_element(2,5) for i in range(len(a))]
+f=[ZZ.random_element(2,6) for i in range(len(a))]
+g=[ZZ.random_element(1,5) for i in range(len(a))]
+h=[ZZ.random_element(3,10) for i in range(len(a))]
+k=[ZZ.random_element(1,4) for i in range(len(a))]
+m=[ZZ.random_element(2,4) for i in range(len(a))]
+n=[ZZ.random_element(2,4) for i in range(len(a))]
+p=[ZZ.random_element(1,6) for i in range(len(a))]
+q=[ZZ.random_element(1,6) for i in range(len(a))]
+u=[ZZ.random_element(2,4) for i in range(len(a))]
+r=[ZZ.random_element(0,3) for i in range(len(a))]
+s=[ZZ.random_element(2,4) for i in range(len(a))]
+v=[ZZ.random_element(3,8) for i in range(len(a))]
+w=[ZZ.random_element(3,6) for i in range(len(a))]
+
+# Generate list of 0s and 1s to 'turn on/off' random constant or variable x/y
+CZ=[ZZ.random_element(0,2) for i in range(len(a))]
+XZ=[ZZ.random_element(0,2) for i in range(len(a))]
+YZ=[ZZ.random_element(0,2) for i in range(len(a))]
+
+# Generate random list of prime numbers
+PL=[2,3,5,7,11]
+RPL=[PL[ZZ.random_element(0,5)] for i in range(len(a))]
+
+   
+# r is intended to be the exponent of variable to stays under radical
+# if r is larger than the radical index, pick another
+for j in range(len(a)):
+  while r[j]>=m[j]:
+    r[j]=ZZ.random_element(0,3)
+ 
+  
+for j in range(len(a)):
+  while a[j]==b[j]:
+    a[j]=ZZ.random_element(2,5) 
+    b[j]=ZZ.random_element(2,5) 
+        
+ 
+# generate the solution of each problem 
+
+# Problem Type1: \sqrt[n]{ ( prime * a^n * x^(n*m+r) / (b^n y^n) } = ax^m \sqrt[n]{prime * x^r} / (by)
+# Prime stays, 
+num1=[RPL[i]*a[i]^m[i]*x^(XZ[i]*(m[i]*p[i]+r[i])) for i in range(len(a))]
+den1=[b[i]^m[i]*y^(YZ[i]*m[i]) for i in range(len(a))]
+
+
+    
+  
+# assign variables to a null character
+qoutput1=""
+aoutput1=""
+
+
+# generate the latex code for the questions and answers
+for i in range(len(a)):
+  if m[i]==2:    #Use \sqrt
+    qoutput1 += r" \item $\sqrt{\frac{%s}{%s}}       $" %( latex( num1[i] ) ,  latex( den1[i]) )
+    aoutput1 += r" \item $\frac{%s \sqrt{%s} }{%s}              $" %( latex( a[i]*x^(XZ[i]*p[i])) , latex(RPL[i]*x^(XZ[i]*r[i]) ),   latex( b[i]*y^YZ[i] ) )
+  else:          #Use \sqrt[n]
+    qoutput1 += r" \item $\sqrt[%s]{\frac{%s}{%s}}   $" %( latex( m[i]),  latex(num1[i]) ,  latex( den1[i] ))
+    aoutput1 += r" \item $\frac{%s \sqrt[%s]{%s} }{%s}              $" %( latex( a[i]*x^(XZ[i]*p[i])),latex(m[i]), latex(RPL[i]*x^(XZ[i]*r[i]) ) , latex( b[i]*y^YZ[i] )  )
+
+ 
+\end{sagesilent}
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%  Latex Output %%%%%%%%%%%%%%%%%%%%
+
+% Random Seed can be used to re-create a particular worksheet
+\noindent Simplify using the quotient rule: \\
+\textcolor{gray}{Random Seed: $\sage{t}$}
+
+
+% Create list of problems via qoutput
+\begin{enumerate}
+\begin{multicols}{3}
+\sagestr{qoutput1}
+\end{multicols}
+\end{enumerate}
+
+
+\newpage
+
+
+% Create associated list of solutions via aoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{aoutput1}
+\end{enumerate}
+\end{multicols}
+
+
+\end{document}

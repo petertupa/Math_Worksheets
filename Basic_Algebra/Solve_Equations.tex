@@ -1,0 +1,154 @@
+\documentclass{article}%
+\usepackage{sagetex}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{amsmath}
+\setlength {\textwidth} {7.5in} 
+\setlength {\textheight}{10.0in}
+\setlength{\oddsidemargin} {-0.5in}
+\setlength {\evensidemargin} {-0.5in}
+\setlength{\topmargin} {-0.0in} 
+\setlength {\headheight} {4.0pt} 
+\setlength {\headsep} {0in}
+\setlength{\columnsep}{0.5cm}
+
+
+\begin{document}
+
+
+\begin{sagesilent}
+import random
+# Generate and set a random seed.
+t=ZZ.random_element(999999)
+#t=int( open('random_seed.txt').read() ) 
+set_random_seed(t)
+# Generate lists of random integers to be used
+a=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,10) for i in range(20)]
+b=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,15) for i in range(len(a))]
+c=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,8) for i in range(len(a))]
+d=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,20) for i in range(len(a))]
+f=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,8) for i in range(len(a))]
+g=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,34) for i in range(len(a))]
+h=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+k=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,12) for i in range(len(a))]
+m=[ZZ.random_element(1,6) for i in range(len(a))]
+n=[ZZ.random_element(1,8) for i in range(len(a))]
+p=[ZZ.random_element(1,4) for i in range(len(a))]
+q=[ZZ.random_element(1,10) for i in range(len(a))]
+r=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,6) for i in range(len(a))]
+s=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(1,9) for i in range(len(a))]
+v=[(-1)^(ZZ.random_element(1,3))*ZZ.random_element(2,9) for i in range(len(a))]
+w=[ZZ.random_element(2,9) for i in range(len(a))]
+
+
+
+# check to make sure the coefficient of x is not zero
+for j in range(len(a)):
+  while (a[j]-c[j])==0:
+    a[j]=(-1)^(ZZ.random_element(1,3))*(ZZ.random_element(1,6))
+    c[j]=(-1)^(ZZ.random_element(1,3))*(ZZ.random_element(1,6))
+
+for j in range(len(a)):
+  while (a[j]*m[j]-k[j]*c[j])==0:
+    k[j]=(-1)^(ZZ.random_element(1,3))*(ZZ.random_element(1,12))   
+    
+for j in range(len(a)):
+  while (v[j]-r[j]*c[j])==0:
+    r[j]=(-1)^(ZZ.random_element(1,3))*(ZZ.random_element(1,6))    
+
+    
+# assign the left and right expressions to variables and store these each in a list
+# Problem Type1: ax+b = c
+expression1=[c[i]*x+h[i] for i in range(len(a))]
+answer1=[solve(expression1[i]==g[i],x)[0] for i in range(len(a))]
+
+    
+# Problem Type2: ax+b = cx + d
+expression2L=[(a[i]*x+b[i]) for i in range(len(a))]
+expression2R=[(c[i]*x+d[i]) for i in range(len(a))]
+answer2=[solve(expression2L[i]==expression2R[i],x)[0] for i in range(len(a))]
+
+
+# Problem Type3: ax/b + c/d = (fx+g)/k     
+#Factors in denominators choosen for nicer LCD
+# NUM and DEN setup for LateX output
+expression3L=[(a[i]*x)/(n[i]*p[i])+b[i]/(m[i]*n[i]) for i in range(len(a))]
+expression3R=[(k[i]*x+f[i])/(m[i]*n[i]*p[i])  for i in range(len(a))]
+expression3RNUM=[(k[i]*x+f[i])  for i in range(len(a))]
+expression3RDEN=[(m[i]*n[i]*p[i])  for i in range(len(a))]
+answer3=[solve(expression3L[i]==expression3R[i],x)[0] for i in range(len(a))]
+
+
+# Problem Type4: a(x+b)+c = d(fx+g)     
+expression4L=[v[i]*(x+s[i])+q[i] for i in range(len(a))]
+expression4R=[r[i]*(c[i]*x+w[i]) for i in range(len(a))]
+answer4=[solve(expression4L[i]==expression4R[i],x)[0] for i in range(len(a))]
+
+
+# assign variables to a null character
+qoutput1=""
+aoutput1=""
+qoutput2=""
+aoutput2=""
+qoutput3=""
+aoutput3=""
+qoutput4=""
+aoutput4=""
+
+
+# generate the latex code for the questions and answers
+for i in range(len(a)):
+  qoutput1 += r" \item $%s=%s$" %(latex(expression1[i]),g[i])
+  aoutput1 += r" \item $%s$" %(latex(answer1[i]))
+
+  qoutput2 += r" \item $%s = %s$" %(latex(expression2L[i]),latex(expression2R[i]))
+  aoutput2 += r" \item $%s$" %(latex(answer2[i]))
+
+  qoutput3 += r" \item $%s = \frac{%s}{%s} $" %(latex(expression3L[i]),latex(expression3RNUM[i]),latex(expression3RDEN[i])  )
+  aoutput3 += r" \item $%s$" %(latex(answer3[i]))
+
+  qoutput4 += r" \item $%s (%s) + %s = %s(%s)$" %(v[i],latex(x+s[i]),q[i],r[i],latex(c[i]*x+w[i]))
+  aoutput4 += r" \item $%s$" %(latex(answer4[i]))
+  
+\end{sagesilent}
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%  Latex Output %%%%%%%%%%%%%%%%%%%%
+
+% Random Seed can be used to re-create a particular worksheet
+\noindent Solve each equation: \\
+\textcolor{gray}{Random Seed: $\sage{t}$}
+
+
+% Create list of problems via qoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{qoutput1}
+\sagestr{qoutput2}
+\sagestr{qoutput3}
+\sagestr{qoutput4}
+\end{enumerate}
+\end{multicols}
+
+
+\vfill
+\newpage
+
+
+% Create associated list of solutions via aoutput
+\begin{multicols}{3}
+\begin{enumerate}
+\sagestr{aoutput1}
+\sagestr{aoutput2}
+\sagestr{aoutput3}
+\sagestr{aoutput4}
+\end{enumerate}
+\end{multicols}
+
+
+\end{document}
